@@ -1,0 +1,80 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - '**'
+
+env:
+  NODE_VERSION: '16'
+
+jobs:
+  install:
+    name: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - name: node_modules cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-cache-${{ hashFiles('**/package-lock.json') }}
+      - name: Install
+        working-directory: .
+        run: npm install
+  lint:
+    name: lint
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: node_modules cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-cache-${{ hashFiles('**/package-lock.json') }}
+      - name: Lint
+        working-directory: .
+        run: npm run lint
+  prettier:
+    name: prettier
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: node_modules cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-cache-${{ hashFiles('**/package-lock.json') }}
+      - name: Prettier
+        working-directory: .
+        run: npm run prettier
+  jest:
+    name: jest
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: node_modules cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-cache-${{ hashFiles('**/package-lock.json') }}
+      - name: Jest
+        working-directory: .
+        run: npm run jest
