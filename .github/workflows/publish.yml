@@ -1,0 +1,24 @@
+name: Publish Package to npmjs
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: |
+          npm config set git-tag-version=false
+          npm version ${{ github.event.release.tag_name }}
+          npm ci
+          npm run compile
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
