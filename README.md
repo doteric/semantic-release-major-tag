@@ -27,3 +27,22 @@ yarn add -D semantic-release-major-tag
   ]
 }
 ```
+
+## Settings
+
+`customTags` (optional, defaults to `[v${major}]`) - An array of the tags format to be created.  
+Use `${major}`, `${minor}` or `${patch}` as strings to specify where you would like the specific version number to be present.
+
+Example:
+
+```
+{
+  "plugins": [
+    // ...
+    ["semantic-release-major-tag", {
+      "customTags": ["v${major}-example", "example-${major}.${minor}"],
+    }],
+    // ...
+  ]
+}
+```
