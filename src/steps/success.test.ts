@@ -14,7 +14,6 @@ describe('success', () => {
     const contextMock = {
       options: {
         repositoryUrl: repoUrlMock,
-        tagFormat: '${version}',
       },
       nextRelease: {
         version: '2.1.3',
@@ -25,6 +24,65 @@ describe('success', () => {
     expect(execSync).toHaveBeenCalledWith('git tag --force v2');
     expect(execSync).toHaveBeenCalledWith(
       `git push ${repoUrlMock} --force --tags`
+    );
+  });
+
+  it('should execute proper commands for custom major & minor tag', () => {
+    const repoUrlMock =
+      'https://test-user:test-credentials@example.com/my-test-repo.git';
+    const contextMock = {
+      options: {
+        repositoryUrl: repoUrlMock,
+      },
+      nextRelease: {
+        version: '2.1.3',
+      },
+      logger: { info: jest.fn(), error: jest.fn() },
+    } as unknown as Context;
+    success(
+      { customTags: ['v${major}-test', 'v${major}.${minor}'] },
+      contextMock
+    );
+    expect(execSync).toHaveBeenCalledWith('git tag --force v2-test');
+    expect(execSync).toHaveBeenCalledWith('git tag --force v2.1');
+    expect(execSync).toHaveBeenCalledWith(
+      `git push ${repoUrlMock} --force --tags`
+    );
+  });
+
+  it('should throw error when customTags is not an array', () => {
+    const repoUrlMock =
+      'https://test-user:test-credentials@example.com/my-test-repo.git';
+    const logger = { info: jest.fn(), error: jest.fn() };
+    const contextMock = {
+      options: {
+        repositoryUrl: repoUrlMock,
+      },
+      nextRelease: {
+        version: '2.1.3',
+      },
+      logger,
+    } as unknown as Context;
+    expect(() => success({ customTags: 'v${major}' }, contextMock)).toThrow(
+      'customTags setting is not an array! customTags: v${major}'
+    );
+  });
+
+  it('should throw error when invalid customTags provided', () => {
+    const repoUrlMock =
+      'https://test-user:test-credentials@example.com/my-test-repo.git';
+    const logger = { info: jest.fn(), error: jest.fn() };
+    const contextMock = {
+      options: {
+        repositoryUrl: repoUrlMock,
+      },
+      nextRelease: {
+        version: '2.1.3',
+      },
+      logger,
+    } as unknown as Context;
+    expect(() => success({ customTags: [true, false] }, contextMock)).toThrow(
+      'customTags setting does not contain strings in array! customTags: true,false'
     );
   });
 });

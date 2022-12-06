@@ -77,4 +77,4 @@ jobs:
           key: ${{ runner.OS }}-cache-${{ hashFiles('**/package-lock.json') }}
       - name: Jest
         working-directory: .
-        run: npm run jest
+        run: npm run jest -- --coverage
