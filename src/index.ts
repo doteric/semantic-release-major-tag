@@ -4,4 +4,4 @@ const semanticReleaseMajorTag = {
   success,
 };
 
-export default semanticReleaseMajorTag;
+export = semanticReleaseMajorTag;
