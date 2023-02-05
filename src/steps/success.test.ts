@@ -7,6 +7,10 @@ jest.mock('node:child_process', () => ({
   execSync: jest.fn(),
 }));
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('success', () => {
   it('should execute proper commands for basic major tag', () => {
     const repoUrlMock =
@@ -84,5 +88,27 @@ describe('success', () => {
     expect(() => success({ customTags: [true, false] }, contextMock)).toThrow(
       'customTags setting does not contain strings in array! customTags: true,false'
     );
+  });
+
+  it('should not create tags for prereleases', () => {
+    const repoUrlMock =
+      'https://test-user:test-credentials@example.com/my-test-repo.git';
+    const contextMock = {
+      options: {
+        repositoryUrl: repoUrlMock,
+      },
+      nextRelease: {
+        version: '2.1.3-beta.1',
+      },
+      branch: {
+        prerelease: 'beta',
+      },
+      logger: { info: jest.fn(), error: jest.fn() },
+    } as unknown as Context;
+    success(
+      { customTags: ['v${major}-test', 'v${major}.${minor}'] },
+      contextMock
+    );
+    expect(execSync).not.toBeCalled();
   });
 });
