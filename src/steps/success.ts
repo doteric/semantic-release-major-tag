@@ -1,11 +1,18 @@
-import type { Context } from 'semantic-release';
+import type { BranchObject, Context } from 'semantic-release';
 import { execSync } from 'node:child_process';
 
 import prepareTags from './prepareTags';
 import type { PluginConfigType } from './types';
 
+const isPrerelease = (branchObject: BranchObject) =>
+  branchObject && !!branchObject.prerelease;
+
 const success = (pluginConfig: PluginConfigType, context: Context) => {
-  const { options, nextRelease, logger } = context;
+  const { options, nextRelease, logger, branch } = context;
+  if (isPrerelease(branch)) {
+    logger.info(`Not publishing any tags on a prerelease!`);
+    return;
+  }
   if (!options) {
     logger.error(`Missing options from context!`);
     return;
