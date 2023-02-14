@@ -105,10 +105,14 @@ describe('success', () => {
       },
       logger: { info: jest.fn(), error: jest.fn() },
     } as unknown as Context;
-    success(
+    const result = success(
       { customTags: ['v${major}-test', 'v${major}.${minor}'] },
       contextMock
     );
+    expect(result).toBeUndefined();
     expect(execSync).not.toBeCalled();
+    expect(contextMock.logger.info).toBeCalledWith(
+      'Not publishing any tags on a prerelease!'
+    );
   });
 });

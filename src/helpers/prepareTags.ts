@@ -1,4 +1,4 @@
-import type { PluginConfigType } from './types';
+import type { PluginConfigType } from './preparePluginConfig';
 
 const validateCustomTagsSetting = (
   customTags: unknown
@@ -24,7 +24,7 @@ const validateCustomTagsSetting = (
 };
 
 const prepareTags = (version: string, pluginConfig: PluginConfigType) => {
-  const customTags = validateCustomTagsSetting(pluginConfig?.customTags);
+  const customTags = validateCustomTagsSetting(pluginConfig.customTags);
   const tagsFormat = customTags || ['v${major}'];
 
   const [major, minor, patch] = version.split('.');

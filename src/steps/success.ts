@@ -1,24 +1,27 @@
-import type { BranchObject, Context } from 'semantic-release';
+import type { Context } from 'semantic-release';
 import { execSync } from 'node:child_process';
 
-import prepareTags from './prepareTags';
-import type { PluginConfigType } from './types';
+import prepareTags from '../helpers/prepareTags';
+import skipForPrerelease from '../helpers/skipForPrerelease';
+import preparePluginConfig from '../helpers/preparePluginConfig';
 
-const isPrerelease = (branchObject: BranchObject) =>
-  branchObject && !!branchObject.prerelease;
-
-const success = (pluginConfig: PluginConfigType, context: Context) => {
+const success = (pluginConfigBare: unknown, context: Context) => {
   const { options, nextRelease, logger, branch } = context;
-  if (isPrerelease(branch)) {
-    logger.info(`Not publishing any tags on a prerelease!`);
+
+  // Prepare config with defaults
+  const pluginConfig = preparePluginConfig(pluginConfigBare);
+
+  if (skipForPrerelease(branch, pluginConfig)) {
+    logger.info('Not publishing any tags on a prerelease!');
     return;
   }
+
   if (!options) {
-    logger.error(`Missing options from context!`);
+    logger.error('Missing options from context!');
     return;
   }
   if (!nextRelease) {
-    logger.error(`Missing nextRelease from context!`);
+    logger.error('Missing nextRelease from context!');
     return;
   }
   const { repositoryUrl } = options;
