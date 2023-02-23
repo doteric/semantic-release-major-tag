@@ -33,6 +33,8 @@ yarn add -D semantic-release-major-tag
 `customTags` (optional, defaults to `[v${major}]`) - An array of the tags format to be created.  
 Use `${major}`, `${minor}` or `${patch}` as strings to specify where you would like the specific version number to be present.
 
+`includePrerelease` (optional, defaults to `false`) - Set to `true` if you would like to include prereleases.
+
 Example:
 
 ```
